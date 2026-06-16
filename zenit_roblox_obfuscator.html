@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZENIT OBFUSCATOR - Roblox Lua Obfuscation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #00ff00;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(0, 255, 0, 0.05);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+
+        header h1 {
+            font-size: 3em;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 10px;
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px #00ff00; }
+            50% { text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
+        }
+
+        header p {
+            font-size: 1.2em;
+            color: #00cc00;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .input-section, .output-section {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #00ff00;
+            border: 1px solid #00aa00;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            resize: vertical;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        textarea::placeholder {
+            color: #006600;
+        }
+
+        .controls {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.05);
+            border-radius: 5px;
+            border: 1px solid #00aa00;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #00ff00;
+        }
+
+        .level-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            padding: 10px 20px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .level-btn:hover {
+            background: rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .level-btn.active {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #00aa00, #008800);
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+
+        .info-box {
+            background: rgba(0, 150, 255, 0.1);
+            border-left: 4px solid #00ff00;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #00ff00;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            color: #00cc00;
+            font-size: 0.9em;
+        }
+
+        .levels-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .level-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+        }
+
+        .level-card h3 {
+            color: #00ff00;
+            margin-bottom: 8px;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .level-card p {
+            color: #00cc00;
+            font-size: 0.9em;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #00aa00;
+            border-radius: 5px;
+            padding: 10px 15px;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #006600;
+            font-size: 0.8em;
+        }
+
+        .stat-value {
+            color: #00ff00;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 2px solid #00ff00;
+            color: #00cc00;
+        }
+
+        .warning {
+            background: rgba(255, 100, 0, 0.1);
+            border-left: 4px solid #ff6400;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #ffaa00;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            textarea {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>⚡ ZENIT OBFUSCATOR ⚡</h1>
+            <p>5-STAGE ROBLOX LUA CODE OBFUSCATION SYSTEM</p>
+        </header>
+
+        <!-- Obfuscation Levels Info -->
+        <div class="levels-info">
+            <div class="level-card">
+                <h3>Level 1: BASIC</h3>
+                <p>Remove comments & whitespace</p>
+            </div>
+            <div class="level-card">
+                <h3>Level 2: RENAMING</h3>
+                <p>Variable & function renaming</p>
+            </div>
+            <div class="level-card">
+                <h3>Level 3: STRING ENC</h3>
+                <p>Base64 string encoding</p>
+            </div>
+            <div class="level-card">
+                <h3>Level 4: CONTROL FLOW</h3>
+                <p>Add dead code & junk</p>
+            </div>
+            <div class="level-card">
+                <h3>Level 5: ENCRYPTION</h3>
+                <p>XOR + Hex encryption</p>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-group">
+                <label>🔧 SELECT OBFUSCATION LEVEL:</label>
+                <div class="level-selector">
+                    <button class="level-btn active" onclick="setLevel(1)">LEVEL 1</button>
+                    <button class="level-btn" onclick="setLevel(2)">LEVEL 2</button>
+                    <button class="level-btn" onclick="setLevel(3)">LEVEL 3</button>
+                    <button class="level-btn" onclick="setLevel(4)">LEVEL 4</button>
+                    <button class="level-btn" onclick="setLevel(5)">LEVEL 5</button>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>💡 RECOMMENDATION:</h3>
+                <p>For maximum security, use <strong>Level 5</strong>. For better readability, use <strong>Level 2-3</strong>.</p>
+            </div>
+
+            <div class="warning">
+                ⚠️ Use obfuscation responsibly! Only obfuscate code you own or have permission to obfuscate.
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="section-title">📥 INPUT CODE</div>
+                <textarea id="inputCode" placeholder="Paste your Roblox Lua script here...">-- Roblox Script Example
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character
+local humanoid = character:WaitForChild("Humanoid")
+
+print("Player loaded: " .. player.Name)
+
+function onTouched(hit)
+    print("Touched: " .. hit.Name)
+    hit:Destroy()
+end
+
+local part = workspace:FindFirstChild("Part")
+if part then
+    part.Touched:Connect(onTouched)
+end</textarea>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-label">INPUT SIZE</div>
+                        <div class="stat-value" id="inputSize">0</div>
+                        <div class="stat-label">bytes</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">LINES</div>
+                        <div class="stat-value" id="inputLines">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div class="output-section">
+                <div class="section-title">📤 OBFUSCATED OUTPUT</div>
+                <textarea id="outputCode" placeholder="Obfuscated code will appear here..." readonly></textarea>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-label">OUTPUT SIZE</div>
+                        <div class="stat-value" id="outputSize">0</div>
+                        <div class="stat-label">bytes</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">COMPRESSION</div>
+                        <div class="stat-value" id="compression">0%</div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="copy-btn" onclick="copyOutput()">📋 COPY</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Action Button -->
+        <div style="text-align: center; margin: 30px 0;">
+            <button onclick="obfuscate()" style="max-width: 300px; padding: 15px 40px; font-size: 1.2em;">
+                🔐 OBFUSCATE CODE
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>ZENIT OBFUSCATOR v1.0 | Advanced Roblox Lua Protection System</p>
+            <p style="margin-top: 10px; color: #008800; font-size: 0.9em;">Keep your scripts secure 🛡️</p>
+        </div>
+    </div>
+
+    <script>
+        let currentLevel = 1;
+
+        // Set obfuscation level
+        function setLevel(level) {
+            currentLevel = level;
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Update input stats
+        document.getElementById('inputCode').addEventListener('input', function() {
+            const size = this.value.length;
+            const lines = this.value.split('\n').length;
+            document.getElementById('inputSize').textContent = size;
+            document.getElementById('inputLines').textContent = lines;
+        });
+
+        // Stage 1: Basic Obfuscation
+        function stage1(code) {
+            // Remove comments
+            code = code.replace(/--[^\n]*/g, '');
+            // Remove extra whitespace
+            code = code.split('\n').map(line => line.trim()).filter(line => line).join(' ');
+            code = code.replace(/\s+/g, ' ');
+            return code;
+        }
+
+        // Stage 2: Variable Renaming
+        function stage2(code) {
+            let obfuscated = code;
+            const vars = ['Players', 'player', 'character', 'humanoid', 'part', 'game', 'workspace', 'print', 'wait', 'spawn'];
+            
+            vars.forEach(v => {
+                const newName = '_' + Math.random().toString(36).substr(2, 9);
+                obfuscated = obfuscated.replace(new RegExp('\\b' + v + '\\b', 'g'), newName);
+            });
+            
+            return obfuscated;
+        }
+
+        // Stage 3: String Encoding
+        function stage3(code) {
+            let result = code;
+            const stringPattern = /"([^"]*)"|'([^']*)'/g;
+            
+            result = result.replace(stringPattern, (match, p1, p2) => {
+                const str = p1 || p2;
+                const encoded = btoa(str);
+                return `(function() local a="${encoded}" return a end)()`;
+            });
+            
+            return result;
+        }
+
+        // Stage 4: Control Flow Obfuscation
+        function stage4(code) {
+            let junk = '';
+            for (let i = 0; i < 5; i++) {
+                const varName = '_' + Math.random().toString(36).substr(2, 8);
+                const randNum = Math.floor(Math.random() * 9999) + 1000;
+                junk += `local ${varName} = ${randNum} `;
+                junk += `if ${varName} > 0 then ${varName} = nil end `;
+            }
+            return junk + code;
+        }
+
+        // Stage 5: Advanced Encryption
+        function stage5(code) {
+            const key = Math.random().toString(36).substr(2, 12);
+            let encrypted = '';
+            
+            for (let i = 0; i < code.length; i++) {
+                const charCode = code.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+                encrypted += String.fromCharCode(charCode);
+            }
+            
+            const hexEncrypted = btoa(encrypted);
+            
+            return `local _k="${key}"\nlocal _c="${hexEncrypted}"\nlocal _d=atob(_c)\nlocal _r=""\nfor i=1,#_d do _r=_r..string.char(string.byte(string.sub(_d,i,i))) end\nloadstring(_r)()`;
+        }
+
+        // Main obfuscate function
+        function obfuscate() {
+            const input = document.getElementById('inputCode').value;
+            
+            if (!input.trim()) {
+                alert('⚠️ Please enter code to obfuscate!');
+                return;
+            }
+
+            let output = input;
+
+            if (currentLevel >= 1) output = stage1(output);
+            if (currentLevel >= 2) output = stage2(output);
+            if (currentLevel >= 3) output = stage3(output);
+            if (currentLevel >= 4) output = stage4(output);
+            if (currentLevel >= 5) output = stage5(output);
+
+            document.getElementById('outputCode').value = output;
+
+            // Update stats
+            const inputSize = input.length;
+            const outputSize = output.length;
+            const compression = Math.round((1 - outputSize / inputSize) * 100);
+
+            document.getElementById('outputSize').textContent = outputSize;
+            document.getElementById('compression').textContent = compression + '%';
+        }
+
+        // Copy to clipboard
+        function copyOutput() {
+            const output = document.getElementById('outputCode');
+            output.select();
+            document.execCommand('copy');
+            alert('✅ Obfuscated code copied to clipboard!');
+        }
+
+        // Initial stats
+        document.getElementById('inputCode').dispatchEvent(new Event('input'));
+    </script>
+</body>
+</html>
